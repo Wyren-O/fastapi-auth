@@ -40,6 +40,17 @@ def register_user(user: schemas.UserCreate, db: Session):
     
     return new_user
 
+def get_user_from_token(token: str, db: Session):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email: str = payload.get("sub")
+        if email is None:
+            return None
+    except jwt.PyJWTError:
+        return None
+    
+    user = db.query(models.User).filter(models.User.email == email).first()
+    return user
 
 
     
